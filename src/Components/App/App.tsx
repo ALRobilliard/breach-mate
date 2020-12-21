@@ -1,25 +1,43 @@
-import React from 'react';
+import React, { Fragment, useState } from "react";
+import ReactDOM from "react-dom";
 import logo from './logo.svg';
 import './App.css';
+import Camera from '../Camera/Camera';
 
 function App() {
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cardImage, setCardImage] = useState();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <div>
+        {isCameraOpen && (
+          <Camera
+            onCapture={(blob: any) => setCardImage(blob)}
+            onClear={() => setCardImage(undefined)}
+          />
+        )}
+
+        {cardImage && (
+          <div>
+            <h2>Preview</h2>
+            <img src={cardImage && URL.createObjectURL(cardImage)} />
+          </div>
+        )}
+
+        <div>
+          <button onClick={() => setIsCameraOpen(true)}>Open Camera</button>
+          <button
+            onClick={() => {
+              setIsCameraOpen(false);
+              setCardImage(undefined);
+            }}
+          >
+            Close Camera
+          </button>
+        </div>
+      </div>
+    </Fragment>
   );
 }
 
