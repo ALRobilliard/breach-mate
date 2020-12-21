@@ -18,7 +18,7 @@ function Camera({ onCapture, onClear }: IProps) {
     const canvasRef: React.MutableRefObject<HTMLCanvasElement | null> = useRef(null);
     const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
     const mediaStream = useUserMedia(CAPTURE_OPTIONS);
-    const [container, setContainer] = useState({ height: 0, width: 0 });
+    const [container, setContainer] = useState({ height: 300, width: 300 });
     const [aspectRatio, calculateRatio] = useScreenRatio(1.586);
     const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
     const offsets = useOffsets(
@@ -95,6 +95,11 @@ function Camera({ onCapture, onClear }: IProps) {
                             autoPlay
                             playsInline
                             muted
+                        />
+                        <canvas
+                            ref={canvasRef}
+                            width={container.width}
+                            height={container.height}
                         />
                     </div>
 
