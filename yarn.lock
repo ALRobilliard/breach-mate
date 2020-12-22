@@ -1829,6 +1829,13 @@
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.6.tgz#a9ca4b70a18b270ccb2bc0aaafefd1d486b7ea74"
   integrity sha512-W+bw9ds02rAQaMvaLYxAbJ6cvguW/iJXNT6lTssS1ps6QdrMKttqEAMEG/b5CR8TZl3/L7/lH0ZV5nNR1LXikA==
 
+"@types/tesseract.js@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/tesseract.js/-/tesseract.js-0.0.2.tgz#d268f3f98242e2a9a33c3097b9ce73223bb95996"
+  integrity sha1-0mjz+YJC4qmjPDCXuc5zIju5WZY=
+  dependencies:
+    "@types/node" "*"
+
 "@types/testing-library__jest-dom@^5.9.1":
   version "5.9.5"
   resolved "https://registry.yarnpkg.com/@types/testing-library__jest-dom/-/testing-library__jest-dom-5.9.5.tgz#5bf25c91ad2d7b38f264b12275e5c92a66d849b0"

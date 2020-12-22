@@ -1,55 +1,38 @@
 import React, { Fragment, useState } from "react";
-import Tesseract from 'tesseract.js';
+import { createWorker, PSM, OEM } from 'tesseract.js';
 import './App.css';
 import Camera from '../Camera/Camera';
 
 interface IAnalysisResponse {
-  pattern: RegExpMatchArray | null;
   text: string;
   confidence: number
 }
+
+const SPARSE_TEXT_OSD = "12";
+const DEFAULT = 3;
 
 function App() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [screenImage, setScreenImage] = useState<Blob>();
   const [imageObjectUrl, setImageObjectUrl] = useState<string>();
-  const [patterns, setPatterns] = useState<RegExpMatchArray | null>();
-  const [analysisResp, setAnalysisResp] = useState<IAnalysisResponse>();
+  const [analysisResp, setAnalysisResp] = useState<string>();
 
-  function analyseImage() {
-    window.alert('hit analyse')
-    let imageObj = imageObjectUrl;
-    if (imageObj) {
-      Tesseract.recognize(imageObj, 'eng')
-        .catch(err => {
-          console.error(err)
-        })
-        .then(result => {
-          let confidence,
-            text,
-            patterns;
-          console.log(result);
-          if (result) {
-            // Get Confidence score
-            confidence = result.data.confidence
+  async function analyseImageAsync(imageObj: string) {
+    // Init worker.
+    const worker = createWorker();
+    await worker.load();
+    await worker.loadLanguage('osd');
+    await worker.initialize('osd');
+    await worker.setParameters({
+      tessedit_char_whitelist: '0123456789ABCDEF',
+      tessedit_pageseg_mode: SPARSE_TEXT_OSD as PSM,
+      tessedit_ocr_engine_mode: DEFAULT as OEM
+    });
 
-            // Get full output
-            text = result.data.text
+    const { data: { text } } = await worker.recognize(imageObj);
+    await worker.terminate();
 
-            // Get codes
-            const charWhitelist = /\b[0123456789ABCDEF]{2,2}\b/g
-            patterns = result.data.text.match(charWhitelist);
-
-            // Update state
-            setPatterns(patterns);
-            setAnalysisResp({
-              pattern: patterns,
-              text,
-              confidence
-            });
-          }
-        });
-    }
+    return text;
   }
 
   return (
@@ -57,10 +40,12 @@ function App() {
       <div>
         {isCameraOpen && (
           <Camera
-            onCapture={(blob: any) => {
+            onCapture={async (blob: any) => {
               setScreenImage(blob);
-              setImageObjectUrl(URL.createObjectURL(blob));
-              analyseImage();
+              setImageObjectUrl(URL.createObjectURL(blob))
+
+              if (imageObjectUrl)
+                setAnalysisResp(await analyseImageAsync(imageObjectUrl));
             }}
             onClear={() => setScreenImage(undefined)}
           />
@@ -84,6 +69,7 @@ function App() {
             Close Camera
           </button>
         </div>
+        <textarea value={analysisResp}></textarea>
       </div>
     </Fragment>);
 }
